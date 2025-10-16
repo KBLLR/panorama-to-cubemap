@@ -1,11 +1,30 @@
+/**
+ * Clamps a value between a minimum and maximum value.
+ * @param {number} x The value to clamp.
+ * @param {number} min The minimum value.
+ * @param {number} max The maximum value.
+ * @returns {number} The clamped value.
+ */
 function clamp(x, min, max) {
   return Math.min(max, Math.max(x, min));
 }
 
+/**
+ * Calculates the modulus of a number.
+ * @param {number} x The number.
+ * @param {number} n The modulus.
+ * @returns {number} The result of the modulus operation.
+ */
 function mod(x, n) {
   return ((x % n) + n) % n;
 }
 
+/**
+ * Creates a function that copies a pixel from a source image data to a destination image data using nearest neighbor interpolation.
+ * @param {ImageData} read The source image data.
+ * @param {ImageData} write The destination image data.
+ * @returns {function(number, number, number): void} A function that copies a pixel.
+ */
 function copyPixelNearest(read, write) {
   const {width, height, data} = read;
   const readIndex = (x, y) => 4 * (y * width + x);
@@ -23,6 +42,12 @@ function copyPixelNearest(read, write) {
   };
 }
 
+/**
+ * Creates a function that copies a pixel from a source image data to a destination image data using bilinear interpolation.
+ * @param {ImageData} read The source image data.
+ * @param {ImageData} write The destination image data.
+ * @returns {function(number, number, number): void} A function that copies a pixel.
+ */
 function copyPixelBilinear(read, write) {
   const {width, height, data} = read;
   const readIndex = (x, y) => 4 * (y * width + x);
@@ -49,7 +74,14 @@ function copyPixelBilinear(read, write) {
   };
 }
 
-// performs a discrete convolution with a provided kernel
+/**
+ * Performs a discrete convolution with a provided kernel for resampling.
+ * @param {ImageData} read The source image data.
+ * @param {ImageData} write The destination image data.
+ * @param {number} filterSize The size of the filter.
+ * @param {function(number): number} kernel The kernel function.
+ * @returns {function(number, number, number): void} A function that performs resampling.
+ */
 function kernelResample(read, write, filterSize, kernel) {
   const {width, height, data} = read;
   const readIndex = (x, y) => 4 * (y * width + x);
@@ -92,6 +124,12 @@ function kernelResample(read, write, filterSize, kernel) {
   };
 }
 
+/**
+ * Creates a function that copies a pixel from a source image data to a destination image data using bicubic interpolation.
+ * @param {ImageData} read The source image data.
+ * @param {ImageData} write The destination image data.
+ * @returns {function(number, number, number): void} A function that copies a pixel.
+ */
 function copyPixelBicubic(read, write) {
   const b = -0.5;
   const kernel = x => {
@@ -106,6 +144,12 @@ function copyPixelBicubic(read, write) {
   return kernelResample(read, write, 2, kernel);
 }
 
+/**
+ * Creates a function that copies a pixel from a source image data to a destination image data using Lanczos interpolation.
+ * @param {ImageData} read The source image data.
+ * @param {ImageData} write The destination image data.
+ * @returns {function(number, number, number): void} A function that copies a pixel.
+ */
 function copyPixelLanczos(read, write) {
   const filterSize = 5;
   const kernel = x => {
@@ -121,6 +165,20 @@ function copyPixelLanczos(read, write) {
   return kernelResample(read, write, filterSize, kernel);
 }
 
+/**
+ * @typedef {object} FaceOrientation
+ * @property {function(object, number, number): void} pz Positive Z face orientation function.
+ * @property {function(object, number, number): void} nz Negative Z face orientation function.
+ * @property {function(object, number, number): void} px Positive X face orientation function.
+ * @property {function(object, number, number): void} nx Negative X face orientation function.
+ * @property {function(object, number, number): void} py Positive Y face orientation function.
+ * @property {function(object, number, number): void} ny Negative Y face orientation function.
+ */
+
+/**
+ * Functions for orienting the cube faces.
+ * @type {FaceOrientation}
+ */
 const orientations = {
   pz: (out, x, y) => {
     out.x = -1;
@@ -154,6 +212,15 @@ const orientations = {
   }
 };
 
+/**
+ * Renders a single face of the cubemap.
+ * @param {object} options The options for rendering the face.
+ * @param {ImageData} options.data The source image data.
+ * @param {string} options.face The name of the face to render.
+ * @param {number} options.rotation The rotation of the cube in radians.
+ * @param {string} options.interpolation The interpolation method to use.
+ * @param {number} [options.maxWidth=Infinity] The maximum width of the face.
+ */
 function renderFace({data: readData, face, rotation, interpolation, maxWidth = Infinity}) {
 
   const faceWidth = Math.min(maxWidth, readData.width / 4);
@@ -193,6 +260,11 @@ function renderFace({data: readData, face, rotation, interpolation, maxWidth = I
   postMessage(writeData);
 }
 
+/**
+ * Handles messages sent to the worker.
+ * @param {MessageEvent} event The message event.
+ * @param {object} event.data The data sent to the worker.
+ */
 onmessage = function({data}) {
   renderFace(data);
 };

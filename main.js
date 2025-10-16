@@ -1,7 +1,15 @@
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
 
+/**
+ * Represents a set of radio inputs.
+ */
 class RadioInput {
+  /**
+   * Creates a new RadioInput.
+   * @param {string} name The name of the radio inputs.
+   * @param {function(): void} onChange The function to call when the value changes.
+   */
   constructor(name, onChange) {
     this.inputs = document.querySelectorAll(`input[name=${name}]`);
     for (let input of this.inputs) {
@@ -9,6 +17,10 @@ class RadioInput {
     }
   }
 
+  /**
+   * The value of the selected radio input.
+   * @type {string}
+   */
   get value() {
     for (let input of this.inputs) {
       if (input.checked) {
@@ -18,19 +30,38 @@ class RadioInput {
   }
 }
 
+/**
+ * Represents a single input element.
+ */
 class Input {
+  /**
+   * Creates a new Input.
+   * @param {string} id The ID of the input element.
+   * @param {function(): void} onChange The function to call when the value changes.
+   */
   constructor(id, onChange) {
     this.input = document.getElementById(id);
     this.input.addEventListener('change', onChange);
     this.valueAttrib = this.input.type === 'checkbox' ? 'checked' : 'value';
   }
 
+  /**
+   * The value of the input.
+   * @type {string|boolean}
+   */
   get value() {
     return this.input[this.valueAttrib];
   }
 }
 
+/**
+ * Represents a single face of a cubemap.
+ */
 class CubeFace {
+  /**
+   * Creates a new CubeFace.
+   * @param {string} faceName The name of the face.
+   */
   constructor(faceName) {
     this.faceName = faceName;
 
@@ -44,12 +75,23 @@ class CubeFace {
     this.anchor.appendChild(this.img);
   }
 
+  /**
+   * Sets the preview image for the face.
+   * @param {string} url The URL of the preview image.
+   * @param {number} x The x position of the preview image.
+   * @param {number} y The y position of the preview image.
+   */
   setPreview(url, x, y) {
     this.img.src = url;
     this.anchor.style.left = `${x}px`;
     this.anchor.style.top = `${y}px`;
   }
 
+  /**
+   * Sets the download link for the face.
+   * @param {string} url The URL of the image to download.
+   * @param {string} fileExtension The file extension of the image.
+   */
   setDownload(url, fileExtension) {
     this.anchor.href = url;
     this.anchor.download = `${this.faceName}.${fileExtension}`;
@@ -57,6 +99,10 @@ class CubeFace {
   }
 }
 
+/**
+ * Removes all children from a DOM node.
+ * @param {Node} node The node to remove children from.
+ */
 function removeChildren(node) {
   while (node.firstChild) {
     node.removeChild(node.firstChild);
@@ -68,6 +114,12 @@ const mimeType = {
   'png': 'image/png'
 };
 
+/**
+ * Converts image data to a data URL.
+ * @param {ImageData} imgData The image data to convert.
+ * @param {string} extension The file extension of the image.
+ * @returns {Promise<string>} A promise that resolves with the data URL.
+ */
 function getDataURL(imgData, extension) {
   canvas.width = imgData.width;
   canvas.height = imgData.height;
@@ -100,6 +152,9 @@ const facePositions = {
   ny: {x: 1, y: 2}
 };
 
+/**
+ * Loads an image from the file input and starts the conversion process.
+ */
 function loadImage() {
   const file = dom.imageInput.files[0];
 
@@ -125,6 +180,10 @@ function loadImage() {
 let finished = 0;
 let workers = [];
 
+/**
+ * Processes the image data and renders the cubemap faces.
+ * @param {ImageData} data The image data to process.
+ */
 function processImage(data) {
   removeChildren(dom.faces);
   dom.generating.style.visibility = 'visible';
@@ -138,6 +197,12 @@ function processImage(data) {
   }
 }
 
+/**
+ * Renders a single face of the cubemap.
+ * @param {ImageData} data The image data to process.
+ * @param {string} faceName The name of the face to render.
+ * @param {{x: number, y: number}} position The position of the face in the output grid.
+ */
 function renderFace(data, faceName, position) {
   const face = new CubeFace(faceName);
   dom.faces.appendChild(face.anchor);
