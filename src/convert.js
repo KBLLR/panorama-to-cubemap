@@ -221,7 +221,8 @@ const orientations = {
  * @param {string} options.interpolation The interpolation method to use.
  * @param {number} [options.maxWidth=Infinity] The maximum width of the face.
  */
-function renderFace({data: readData, face, rotation, interpolation, maxWidth = Infinity}) {
+
+export function renderFace({data: readData, face, rotation, interpolation, maxWidth = Infinity}) {
 
   const faceWidth = Math.min(maxWidth, readData.width / 4);
   const faceHeight = faceWidth;
@@ -257,14 +258,10 @@ function renderFace({data: readData, face, rotation, interpolation, maxWidth = I
     }
   }
 
-  postMessage(writeData);
+  return writeData;
 }
 
-/**
- * Handles messages sent to the worker.
- * @param {MessageEvent} event The message event.
- * @param {object} event.data The data sent to the worker.
- */
-onmessage = function({data}) {
-  renderFace(data);
+self.onmessage = ({data}) => {
+  const result = renderFace(data);
+  postMessage(result);
 };

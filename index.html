@@ -25,58 +25,6 @@
 </head>
 
 <body>
-  <header>
-    <h1>Panorama to Cubemap</h1>
-    <aside>Convert a 360° panorama to six cube faces.</aside>
-  </header>
-
-  <main>
-    <section>
-      <h2>Upload</h2>
-      <label>Upload a panoramic image: <input id="imageInput" type="file" accept="image/*"></label>
-      <ul>
-        <li>The image should be formatted with the equirectangular projection.</li>
-        <li>The image should have an aspect ratio of 2:1 (the width must be exactly twice the height).</li>
-      </ul>
-      <p>A cubemap will be generated from your image.</p>
-    </section>
-
-    <section class="settings">
-      <h2>Settings</h2>
-      <div>
-        <label>Cube Rotation: <input id="cubeRotation" type="number" min="0" max="359" value="180">°</label>
-      </div>
-      <fieldset title="The resampling algorithm to use when generating the cubemap.">
-        <legend>Interpolation type</legend>
-        <label><input type="radio" name="interpolation" value="lanczos" checked>Lanczos (best but slower)</label>
-        <label><input type="radio" name="interpolation" value="cubic">Cubic (sharper details)</label>
-        <label><input type="radio" name="interpolation" value="linear">Linear (softer details)</label>
-      </fieldset>
-      <fieldset>
-        <legend>Output format</legend>
-        <label><input type="radio" name="format" value="png" checked>PNG</label>
-        <label><input type="radio" name="format" value="jpg">JPEG</label>
-      </fieldset>
-    </section>
-
-    <section>
-      <h2>Output</h2>
-      <p>Click each cube face to save it to your computer.</p>
-      <div id="cubemap">
-        <b id="generating" style="visibility:hidden">Generating...</b>
-        <output id="faces"></output>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <p>
-      <small>By <a href="https://github.com/jaxry">Lucas Crane</a></small>
-      <br>
-      <small>Design by <a href="http://motherfuckingwebsite.com/">mf</a></small>
-    </p>
-  </footer>
-
-  <script src="main.js"></script>
+  <script type="module" src="/src/App.jsx"></script>
 </body>
 </html>
